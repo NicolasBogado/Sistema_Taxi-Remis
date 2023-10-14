@@ -1,0 +1,128 @@
+.bi {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  /*
+   * Sidebar
+   */
+  
+  @media (min-width: 768px) {
+    .sidebar .offcanvas-lg {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 48px;
+    }
+  }  
+  
+  .sidebar .nav-link {
+    font-size: .875rem;
+    font-weight: 500;
+  }
+  
+  .sidebar .nav-link.active {
+    color: #2470dc;
+  }
+  
+  .sidebar-heading {
+    font-size: .75rem;
+  }
+  
+  /*
+   * Navbar
+   */
+  
+  .navbar-brand {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(0, 0, 0, .25);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  }
+  
+  .navbar .form-control {
+    padding: .75rem 1rem;
+  }
+
+  .bi {
+  width: 1rem;
+  height: 1rem;
+}
+
+
+/*
+ * Navbar
+ */
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+}
+
+.remis_america {
+    /* Propiedades de estilo que desees aplicar a la imagen */
+    width: 100px; /* Ejemplo: establece el ancho de la imagen */
+    height: auto; /* Ejemplo: permite que la altura se ajuste automáticamente */
+    border: 2px solid #000; /* Ejemplo: agrega un borde de 2px sólido de color negro */
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .navbar {
+    background-color:rgba(0, 132, 255, 0.807); /* Cambia el color de fondo según tus preferencias */
+    border-bottom: 2px solid #000; /* Agrega una línea blanca en la parte inferior */
+    padding: 10px 0; /* Agrega espacio alrededor del contenido del encabezado */
+    /* Agrega más estilos según tus preferencias */
+  }
+  
+  .navbar-brand {
+    color: #fff; /* Cambia el color del texto del encabezado */
+    background-color: transparent; /* Elimina cualquier fondo que pueda estar presente */
+    padding: 0; /* Elimina cualquier espaciado interno */
+    border: none; /* Elimina cualquier borde que pueda estar presente */
+  }
+  
+  
+  /* Asignacion de viajes */
+.AsignacionDeViajes {
+      display: flex;
+      flex-direction: column;
+  }
+    
+.conteoViajesyVehiculos {
+      justify-content:center;
+      align-items: center;
+      text-align: center;
+      flex-direction: row; 
+      
+}
+    
+.circulo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #3498db;
+  border-radius: 50%;
+  color: #fff;
+  padding: 10px; /* Reducir el espacio interno */
+  width: 115px; /*  ancho del círculo según tus necesidades */
+  height: 115px; /*  alto del círculo según tus necesidades */
+  margin: 30px;
+  margin-right: 50px;
+}
+
+#totalViajes, #totalVehiculos {
+  font-size: 30px; /* Ajusta el tamaño de fuente de los títulos */
+  margin: 5px 0; /* Reducir el espacio entre los elementos */
+}
+
+    
+    
+  

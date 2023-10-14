@@ -1,0 +1,72 @@
+
+.container {
+  background-image: url("../../static/img/back-imagen3.jpg");
+  background-size: cover; /* Ajusta el tamaño de la imagen al contenedor */
+  background-attachment: fixed;
+  background-repeat: no-repeat; /* Evita que se repita la imagen */
+  background-position: center; /* Centra la imagen en el contenedor */
+  min-height: 100vh; /* Establece una altura mínima igual a la altura de la ventana */
+  margin: 0 auto; /* Elimina el margen predeterminado del contenedor */
+  padding: 20px; /*Elimina el relleno predeterminado del contenedor */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+}
+
+/* Estilos para el formulario como tarjeta */
+.form-signin {
+  max-width: 330px;
+  margin: auto;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgb(0, 0, 0);
+  padding: 20px;
+  text-align: center;
+}
+
+.form-signin h1{
+  color: black;
+  display: inline-block; /* Permite que el fondo se ajuste al contenido */
+  padding: 0; /* Ajusta el espaciado dentro de la franja */
+  margin: 0; /* Elimina el margen alrededor del texto */
+  border-radius: 10%;
+  font-family: mv boli;
+}
+
+.form-signin img{
+  width:50%;
+  border-radius: 50%;
+  margin: auto;
+  display: block;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+
+.container .form-check{
+  color:black;
+  display: inline-block; /* Permite que el fondo se ajuste al contenido */
+  padding: 0; /* Ajusta el espaciado dentro de la franja */
+  border-radius: 10%;
+  margin-left: 5%;
+  font-family: mv boli;
+}
+
+.container .form-check input[type="checkbox"] {
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Agrega una sombra suave a la casilla de verificación */
+}
