@@ -14,6 +14,9 @@
       position: sticky;
       top: 48px;
     }
+    .navbar-search {
+      display: block;
+    }
   }  
   
   .sidebar .nav-link {
@@ -46,8 +49,8 @@
 
   .bi {
   width: 1rem;
-  height: 1rem;
-}
+  height: 1rem; 
+  }
 
 
 /*
@@ -123,6 +126,7 @@
   margin: 5px 0; /* Reducir el espacio entre los elementos */
 }
 
+
     
-    
-  
+
+

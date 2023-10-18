@@ -59,16 +59,29 @@ def logout():
 def home():
     return render_template('home.html')
 
-# ruta redireccionar
-@app.route('/redireccionar', methods=['POST'])
-def redireccionar():
-    if 'accion' in request.form:
-        accion = request.form['accion']
-        if accion == 'asignar':
-            return render_template('asignar.html')
-        else:
-            return render_template('nuevo_cliente.html')
+@app.route('/ingresar_cliente',methods=['POST'])
+def ingresar_cliente():
+    if request.method == 'POST':
+        try:
+            nombre_apellido = request.form['NombreyApellido']
+            domicilio = request.form['Domicilio']
+            telefono = request.form['Telefono']
+            cur = db.connection.cursor()
+            cur.execute("INSERT INTO `clientes` (`nombre_apellido`, `domicilio`, `telefono`) VALUES (%s,%s,%s)",(nombre_apellido,domicilio,telefono))
+            db.connection.commit()
+            cur.close()
+        except Exception as e:
+            print("Error en la conexión", e)
+            return render_template('ingresar_cliente.html')
     return render_template('home.html')
+
+@app.route('/asignar', methods=['POST'])
+def asignar():
+    return render_template('asignar.html')
+
+@app.route('/nuevo_cliente', methods=['POST'])
+def nuevo_cliente():
+    return render_template('nuevo_cliente.html')
 
 @app.route('/protected')
 @login_required

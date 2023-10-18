@@ -2,7 +2,7 @@
 {% import 'menu.html' as menu %}
 
 
-{% block title %}Home{% endblock %}
+{% block title %}Nuevo Cliente{% endblock %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -126,160 +126,28 @@
   
   <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h2>Home</h2>
+      <h2>Nuevo Cliente</h2>
       <div class="btn-toolbar mb-2 mb-md-0"></div>
     </div>
     <br>
-    <div class="AsignacionDeViajes">
-      <form class="row g-3" method="post" action="/asignar">
+    <div class="nuevo_cliente">
+      <form class="row g-3" method="post" action="/ingresar_cliente">
         <div class="titulo_cliente">
-          <input type="text" readonly class="form-control-plaintext" placeholder="N° Cliente">
-        </div>
-        <div class="col-auto">
-          <input type="text" class="form-control" id="telefono" placeholder="Teléfono">
-        </div>
-        <div class="col-auto">
-          <input type="hidden" name="accion" value="asignar">
+          <input type="text" readonly class="form-control-plaintext" placeholder="Formulario cliente">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn btn-primary mb-3">asignar</button>
-          
-        </div>
-        <div class="col-auto">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" formaction="/nuevo_cliente" class="btn btn-primary mb-3">nuevo cliente</button>
+          <input class="form-control" type="text" name="NombreyApellido" placeholder="Nombre y Apellido" aria-label="default input example">
+          <br>
+          <input class="form-control" type="text" name="Domicilio" placeholder="Domicilio" aria-label="default input example">
+          <br>
+          <input class="form-control" type="text" name="Telefono" placeholder="Teléfono" aria-label="default input example">
+
+          <br>
+          <button type="submit" formaction="/ingresar_cliente" class="btn btn-primary mb-3">ingresar cliente</button>
         </div>
       </form>
       <br><br>
     </div>
 
-    <h2>Historial de Viajes</h2>
-    <div class="table-responsive small">
-      <table class="table table-striped table-sm">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1,001</td>
-            <td>random</td>
-            <td>data</td>
-            <td>placeholder</td>
-            <td>text</td>
-          </tr>
-          <tr>
-            <td>1,002</td>
-            <td>placeholder</td>
-            <td>irrelevant</td>
-            <td>visual</td>
-            <td>layout</td>
-          </tr>
-          <tr>
-            <td>1,003</td>
-            <td>data</td>
-            <td>rich</td>
-            <td>dashboard</td>
-            <td>tabular</td>
-          </tr>
-          <tr>
-            <td>1,003</td>
-            <td>information</td>
-            <td>placeholder</td>
-            <td>illustrative</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,004</td>
-            <td>text</td>
-            <td>random</td>
-            <td>layout</td>
-            <td>dashboard</td>
-          </tr>
-          <tr>
-            <td>1,005</td>
-            <td>dashboard</td>
-            <td>irrelevant</td>
-            <td>text</td>
-            <td>placeholder</td>
-          </tr>
-          <tr>
-            <td>1,006</td>
-            <td>dashboard</td>
-            <td>illustrative</td>
-            <td>rich</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,007</td>
-            <td>placeholder</td>
-            <td>tabular</td>
-            <td>information</td>
-            <td>irrelevant</td>
-          </tr>
-          <tr>
-            <td>1,008</td>
-            <td>random</td>
-            <td>data</td>
-            <td>placeholder</td>
-            <td>text</td>
-          </tr>
-          <tr>
-            <td>1,009</td>
-            <td>placeholder</td>
-            <td>irrelevant</td>
-            <td>visual</td>
-            <td>layout</td>
-          </tr>
-          <tr>
-            <td>1,010</td>
-            <td>data</td>
-            <td>rich</td>
-            <td>dashboard</td>
-            <td>tabular</td>
-          </tr>
-          <tr>
-            <td>1,011</td>
-            <td>information</td>
-            <td>placeholder</td>
-            <td>illustrative</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,012</td>
-            <td>text</td>
-            <td>placeholder</td>
-            <td>layout</td>
-            <td>dashboard</td>
-          </tr>
-          <tr>
-            <td>1,013</td>
-            <td>dashboard</td>
-            <td>irrelevant</td>
-            <td>text</td>
-            <td>visual</td>
-          </tr>
-          <tr>
-            <td>1,014</td>
-            <td>dashboard</td>
-            <td>illustrative</td>
-            <td>rich</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,015</td>
-            <td>random</td>
-            <td>tabular</td>
-            <td>information</td>
-            <td>text</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </main>
 </div>
 </div>
