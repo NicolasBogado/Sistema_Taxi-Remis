@@ -54,7 +54,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
 @app.route('/home')
 def home():
     return render_template('home.html')
@@ -77,7 +76,22 @@ def ingresar_cliente():
 
 @app.route('/asignar', methods=['POST'])
 def asignar():
-    return render_template('asignar.html')
+    if request.method =='POST':
+        try:    
+            cliente = request.form['telefono']
+            cur = db.connection.cursor()      
+            cur.execute("SELECT `telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
+            cliente = cur.fetchone()
+            cur.close()
+            if cliente is None:
+                flash("No se ha encontrado el cliente...")
+                return render_template('home.html')
+            else:
+                return render_template('asignar.html')
+        except Exception as e:
+            flash("Error en la conexión" + str(e))
+            return render_template('home.html')
+    return render_template('home.html')
 
 @app.route('/nuevo_cliente', methods=['POST'])
 def nuevo_cliente():

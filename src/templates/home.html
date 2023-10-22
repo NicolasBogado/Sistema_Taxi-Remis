@@ -136,7 +136,8 @@
           <input type="text" readonly class="form-control-plaintext" placeholder="N° Cliente">
         </div>
         <div class="col-auto">
-          <input type="text" class="form-control" id="telefono" placeholder="Teléfono">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="text" class="form-control" id="telefono" value="">
         </div>
         <div class="col-auto">
           <input type="hidden" name="accion" value="asignar">
@@ -151,6 +152,15 @@
       </form>
       <br><br>
     </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
     <h2>Historial de Viajes</h2>
     <div class="table-responsive small">
