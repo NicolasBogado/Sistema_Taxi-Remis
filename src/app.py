@@ -116,4 +116,5 @@ if __name__ == '__main__':
     csrf.init_app(app)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
+    app.secret_key = 'B!1w8NAt1T^%kvhUI*S^'
     app.run()

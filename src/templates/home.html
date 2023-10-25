@@ -131,20 +131,33 @@
     </div>
     <br>
     <div class="AsignacionDeViajes">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="alert-container">
+          {% for message in messages %}
+          <div class="alert alert-dismissible alert-danger" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
       <form class="row g-3" method="post" action="/asignar">
         <div class="titulo_cliente">
           <input type="text" readonly class="form-control-plaintext" placeholder="N° Cliente">
         </div>
         <div class="col-auto">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="text" class="form-control" id="telefono" value="">
+          <input type="text" class="form-control" id="telefono" name="telefono" value="">
         </div>
         <div class="col-auto">
           <input type="hidden" name="accion" value="asignar">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn btn-primary mb-3">asignar</button>
-          
         </div>
+      </form>
+      <form method="post" action="/nuevo_cliente">  
         <div class="col-auto">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" formaction="/nuevo_cliente" class="btn btn-primary mb-3">nuevo cliente</button>
@@ -152,7 +165,7 @@
       </form>
       <br><br>
     </div>
-    {% with messages = get_flashed_messages() %}
+    <!-- {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul>
           {% for message in messages %}
@@ -160,7 +173,7 @@
           {% endfor %}
         </ul>
       {% endif %}
-    {% endwith %}
+    {% endwith %} -->
 
     <h2>Historial de Viajes</h2>
     <div class="table-responsive small">
