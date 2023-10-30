@@ -2,7 +2,7 @@
 {% import 'menu.html' as menu %}
 
 
-{% block title %}Home{% endblock %}
+{% block title %}Choferes{% endblock %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -126,7 +126,7 @@
   
   <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h2>Home</h2>
+      <h2>Choferes</h2>
       <div class="btn-toolbar mb-2 mb-md-0"></div>
     </div>
     <br>
@@ -135,7 +135,7 @@
       {% if messages %}
       <div class="alert-container">
           {% for message in messages %}
-          <div class="alert alert-dismissible alert-danger" role="alert">
+          <div class="alert alert-dismissible alert-success" role="success">
               {{ message }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
@@ -143,24 +143,17 @@
       </div>
       {% endif %}
       {% endwith %}
-      <form class="row g-3" method="post" action="/asignar">
-        <div class="titulo_cliente">
-          <input type="text" readonly class="form-control-plaintext" placeholder="N° Cliente">
-        </div>
-        <div class="col-auto">
+      <form class="row g-3" method="post" action="/choferes">
+        <div class="choferes">
+          <input type="text" readonly class="form-control-plaintext" placeholder="Ingrese Chofer">
+          
+          <input type="text" class="form-control" id="nombre" name="nombre" value="nombre"> 
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="text" class="form-control" id="telefono" name="telefono" value="teléfono">
-        </div>
-        <div class="col-auto">
-          <input type="hidden" name="accion" value="asignar">
+          <br>    
+          <input type="text" class="form-control" id="apellido" name="apellido" value="apellido">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn btn-primary mb-3">asignar</button>
-        </div>
-      </form>
-      <form method="post" action="/nuevo_cliente">  
-        <div class="col-auto">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" formaction="/nuevo_cliente" class="btn btn-primary mb-3">nuevo cliente</button>
+          <br>
+          <button type="submit" class="btn btn-primary mb-3">registrar</button>
         </div>
       </form>
       <br><br>
@@ -175,135 +168,26 @@
       {% endif %}
     {% endwith %} -->
 
-    <h2>Historial de Viajes</h2>
+    <h2>Choferes</h2>
     <div class="table-responsive small">
-      <table class="table table-striped table-sm">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1,001</td>
-            <td>random</td>
-            <td>data</td>
-            <td>placeholder</td>
-            <td>text</td>
-          </tr>
-          <tr>
-            <td>1,002</td>
-            <td>placeholder</td>
-            <td>irrelevant</td>
-            <td>visual</td>
-            <td>layout</td>
-          </tr>
-          <tr>
-            <td>1,003</td>
-            <td>data</td>
-            <td>rich</td>
-            <td>dashboard</td>
-            <td>tabular</td>
-          </tr>
-          <tr>
-            <td>1,003</td>
-            <td>information</td>
-            <td>placeholder</td>
-            <td>illustrative</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,004</td>
-            <td>text</td>
-            <td>random</td>
-            <td>layout</td>
-            <td>dashboard</td>
-          </tr>
-          <tr>
-            <td>1,005</td>
-            <td>dashboard</td>
-            <td>irrelevant</td>
-            <td>text</td>
-            <td>placeholder</td>
-          </tr>
-          <tr>
-            <td>1,006</td>
-            <td>dashboard</td>
-            <td>illustrative</td>
-            <td>rich</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,007</td>
-            <td>placeholder</td>
-            <td>tabular</td>
-            <td>information</td>
-            <td>irrelevant</td>
-          </tr>
-          <tr>
-            <td>1,008</td>
-            <td>random</td>
-            <td>data</td>
-            <td>placeholder</td>
-            <td>text</td>
-          </tr>
-          <tr>
-            <td>1,009</td>
-            <td>placeholder</td>
-            <td>irrelevant</td>
-            <td>visual</td>
-            <td>layout</td>
-          </tr>
-          <tr>
-            <td>1,010</td>
-            <td>data</td>
-            <td>rich</td>
-            <td>dashboard</td>
-            <td>tabular</td>
-          </tr>
-          <tr>
-            <td>1,011</td>
-            <td>information</td>
-            <td>placeholder</td>
-            <td>illustrative</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,012</td>
-            <td>text</td>
-            <td>placeholder</td>
-            <td>layout</td>
-            <td>dashboard</td>
-          </tr>
-          <tr>
-            <td>1,013</td>
-            <td>dashboard</td>
-            <td>irrelevant</td>
-            <td>text</td>
-            <td>visual</td>
-          </tr>
-          <tr>
-            <td>1,014</td>
-            <td>dashboard</td>
-            <td>illustrative</td>
-            <td>rich</td>
-            <td>data</td>
-          </tr>
-          <tr>
-            <td>1,015</td>
-            <td>random</td>
-            <td>tabular</td>
-            <td>information</td>
-            <td>text</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </main>
-</div>
-</div>
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Apellido</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for chofer in listado_choferes %}
+              <tr>
+                <td>{{ chofer[0] }}</td>
+                <td>{{ chofer[1] }}</td>
+                <td>{{ chofer[2] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
 {% endblock %}
