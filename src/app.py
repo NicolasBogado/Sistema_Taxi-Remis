@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
+import logging
 #from flask_caching import Cache
 
 from config import config
@@ -13,29 +14,34 @@ from models.ModelUser import ModelUser
 from models.entities.User import User
 
 app = Flask(__name__)
-# Configuración de Flask-Caching para desactivar la caché
-#app.config['CACHE_TYPE'] = 'null'  # Desactivar la caché
-#cache = Cache(app)
+app.secret_key = 'remis_america2023'
 csrf = CSRFProtect()
 db = MySQL(app)
 login_manager_app = LoginManager(app)
+
+# Configuración del logger
+logging.basicConfig(level=logging.ERROR)  # Configura el nivel de log a ERROR o superior
+
+# Crea una instancia de Logger
+logger = logging.getLogger(__name__)
+
 
 #manejo de usuarios
 @login_manager_app.user_loader
 def load_user(id):
     return ModelUser.get_by_id(db, id)
+    
 
 # ruta home
 @app.route('/')
 def index():
     return redirect(url_for('login'))
 
+
 # ruta login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # print(request.form['username'])
-        # print(request.form['password'])
         user = User(0, request.form['username'], request.form['password'])
         logged_user = ModelUser.login(db, user)
         if logged_user != None:
@@ -51,15 +57,24 @@ def login():
     else:
         return render_template('auth/login.html')
 
+
 # ruta logout
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+    
 #ruta home
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    cur = db.connection.cursor()
+    cur.execute("SELECT * FROM `viajes`")
+    viajes = cur.fetchall()
+    session['viajes'] = viajes
+    cur.close()
+    return render_template('home.html', viajes=viajes)
+
 
 #método para ingresar nuevo cliente
 @app.route('/ingresar_cliente',methods=['POST'])
@@ -79,6 +94,7 @@ def ingresar_cliente():
             return render_template('ingresar_cliente.html')
     return render_template('home.html')
 
+
 # método para buscar clientes en la base de datos
 @app.route('/asignar', methods=['POST'])
 def asignar():
@@ -86,23 +102,29 @@ def asignar():
         try:    
             cliente = request.form['telefono']
             cur = db.connection.cursor()      
-            cur.execute("SELECT `telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
-            cliente = cur.fetchone()
+            cur.execute("SELECT `nombre_apellido`,`telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
+            cliente = cur.fetchall()
+            session['cliente'] = cliente 
+            cur.execute("SELECT * FROM `choferes` WHERE 1")
+            choferes = cur.fetchall()
             cur.close()
-            if cliente is None:
+            if not cliente:
                 flash("No se ha encontrado el cliente...")
                 return render_template('home.html')
             else:
-                return render_template('asignar.html')
+                return render_template('viajes.html', cliente=cliente, choferes=choferes)
         except Exception as e:
-            flash("Error en la conexión" + str(e))
-            return render_template('home.html')
-    return render_template('home.html')
+            logger.error("Error en la conexión", str(e))
+            print(e)
+            return redirect(url_for('home'))
+    return render_template('viajes.html')
+
 
 #ruta nuevo cliente
 @app.route('/nuevo_cliente', methods=['POST'])
 def nuevo_cliente():
     return render_template('nuevo_cliente.html')
+
 
 # ruta clientes historial
 @app.route('/clientes')
@@ -116,6 +138,7 @@ def clientes():
             flash("Error en la conexión" + str(e))
             return render_template('home.html')
     return render_template('clientes.html', listado_clientes=listado_clientes)
+
 
 # ruta para completar base de datos de choferes
 @app.route('/choferes', methods=['GET','POST'])
@@ -133,17 +156,65 @@ def choferes():
         except Exception as e:
             flash("Error en la conexión"+ str(e))
             return redirect(url_for('choferes'))
-
     try:
         cur = db.connection.cursor()
         cur.execute("SELECT * FROM `choferes`")
         listado_choferes = cur.fetchall()
-        print(listado_choferes)
         cur.close()
     except Exception as e:
         flash("Error en la conexión: " + str(e))
 
     return render_template('choferes.html', listado_choferes=listado_choferes)
+
+# ruta viajes-BACK 
+@app.route('/viajes', methods=['GET', 'POST'])
+def viajes():
+    choferes = []
+    cliente_id = None
+    cliente = None
+    if request.method == 'POST':
+        cliente = session.get('cliente')
+        cliente_id = cliente[0][0]
+        telefono_cliente = cliente[0][1]
+        try: 
+            choferes = request.form.getlist('choferes')
+            chofer = choferes[0] 
+            fecha = request.form['fecha']
+            origen = request.form['origen']
+            destino = request.form['destino']
+            estado = True        
+            cur = db.connection.cursor()
+            cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, origen, destino, estado) VALUES (%(cliente_id)s, %(telefono)s,%(chofer)s, %(fecha)s, %(origen)s, %(destino)s, %(estado)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente,"chofer": chofer, "fecha": fecha, "origen": origen, "destino": destino, "estado": estado})
+            rowcount = cur.rowcount # chequeo si hubo una modificación (devulve números de filas afectadas)
+            cur.connection.commit()
+            cur.close()
+            if rowcount > 0:
+                flash("Viaje creado correctamente", "success")
+                return redirect(url_for('home'))
+            else:
+                flash("Error en la creación del viaje")    
+        except Exception as e:
+            logger.error("Error en la conexión", str(e))
+            print(e)
+            return redirect(url_for('home'))
+
+    return render_template('viajes.html', cliente=cliente, choferes=choferes)
+
+
+#ruta finalizar_viaje
+@app.route('/finalizar_viaje', methods=['POST'])
+def finalizar_viaje():
+    viaje_id = request.args.get('viaje_id') # request.arg.get trae la variable enviada a traves de la ruta del formulario
+    print(viaje_id)
+    estado = False
+    cur = db.connection.cursor()
+    cur.execute("UPDATE `viajes` SET `estado` = %s WHERE `id` = %s", (estado, viaje_id))
+    cur.connection.commit()
+    cur.close()
+    return redirect(url_for('home'))
+
+
+
 
 @app.route('/protected')
 @login_required

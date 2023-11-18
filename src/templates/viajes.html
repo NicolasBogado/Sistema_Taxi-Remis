@@ -2,7 +2,7 @@
 {% import 'menu.html' as menu %}
 
 
-{% block title %}Home{% endblock %}
+{% block title %}Viajes{% endblock %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -27,40 +27,6 @@
     </symbol>
   </svg>
 
-  <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-    <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
-            id="bd-theme"
-            type="button"
-            aria-expanded="false"
-            data-bs-toggle="dropdown"
-            aria-label="Toggle theme (auto)">
-      <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-      <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-          <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-          Light
-          <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-          <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-          Dark
-          <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
-          <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-          Auto
-          <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-        </button>
-      </li>
-    </ul>
-  </div>
 
   
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -126,82 +92,48 @@
   
   <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h2>Home</h2>
+      <h2>Viajes</h2>
       <div class="btn-toolbar mb-2 mb-md-0"></div>
     </div>
-    <br>
-    <div class="AsignacionDeViajes">
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <div class="alert-container">
-          {% for message in messages %}
-          <div class="alert alert-dismissible alert-danger" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          {% endfor %}
-      </div>
-      {% endif %}
-      {% endwith %}
-      <form class="row g-3" method="post" action="/asignar">
-        <div class="titulo_cliente">
-          <input type="text" readonly class="form-control-plaintext" placeholder="N° Cliente">
-        </div>
-        <div class="col-auto">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="text" class="form-control" id="telefono" name="telefono" placeholder="teléfono">
-        </div>
-        <div class="col-auto">
-          <input type="hidden" name="accion" value="asignar">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn btn-primary mb-3">asignar</button>
-        </div>
-      </form>
-      <form method="post" action="/nuevo_cliente">  
-        <div class="col-auto">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" formaction="/nuevo_cliente" class="btn btn-primary mb-3">nuevo cliente</button>
-        </div>
-      </form>
-      <br><br>
-    </div>
-    <h2>Historial de Viajes</h2>
-    <br>
-    <div class="table-responsive small">
-      <table class="table table-striped table-sm" name="historial_viajes">
-        <thead>
-          <tr>
-            <th scope="col">N° Viaje</th>
-            <th scope="col">Cliente</th>
-            <th scope="col">Teléfono</th>
-            <th scope="col">Chofer</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Origen</th>
-            <th scope="col">Destino</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for viaje in viajes %}
-            {% if viaje[7] != 0 %} <!--si es estado es true se ejecuta el bloque-->
-          <tr>
-            <td>{{ viaje[0] }}</td>
-            <td>{{ viaje[1] }}</td>
-            <td>{{ viaje[2] }}</td>
-            <td>{{ viaje[3] }}</td>
-            <td>{{ viaje[4] }}</td>
-            <td>{{ viaje[5] }}</td>
-            <td>{{ viaje[6] }}</td>
-            <td>
-              <form action="{{ url_for('finalizar_viaje', viaje_id=viaje[0]) }}" method="post">
-                <button type="submit" class="btn btn-primary">Finalizar Viaje</button>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              </form>
-            </td>           
-          </tr>
-           {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="formulario-viajes">
+        <form action="/viajes" method="POST">
+            <div class="campo">
+                <label for="cliente">Cliente:</label>
+                <br>
+                {% if cliente %}
+                <p>{{ cliente[0][0] }} - {{ cliente[0][1] }}</p>
+                {% else %}
+                <p>Cliente no definido</p>
+                {% endif %}
+            </div>
+        
+            <div class="campo">
+                <label for="choferes">Chofer:</label>
+                <select name="choferes" id="choferes">
+                    {% for chofer in choferes %}
+                        <option value="{{ chofer[0] }}">{{ chofer[0] }} - {{ chofer[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="campo">
+                <label for="fecha">Fecha y Hora del Viaje:</label>
+                <input type="datetime-local" name="fecha" id="fecha">
+            </div>
+        
+            <div class="campo">
+                <label for="origen">Origen del Viaje:</label>
+                <input type="text" name="origen" id="origen" value="">
+            </div>
+        
+            <div class="campo">
+                <label for="destino">Destino del Viaje:</label>
+                <input type="text" name="destino" id="destino" value="">
+            </div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="boton-asignar">Asignar Viaje</button>
+        </form>
+        
     </div>
   </main>
 </div>
