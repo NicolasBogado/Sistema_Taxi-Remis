@@ -105,8 +105,12 @@ def asignar():
             cur.execute("SELECT `nombre_apellido`,`telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
             cliente = cur.fetchall()
             session['cliente'] = cliente 
-            cur.execute("SELECT * FROM `choferes` WHERE 1")
+
+
+            cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")# filtro los choferes con el estado = 0, es decir sin viajes
             choferes = cur.fetchall()
+
+
             cur.close()
             if not cliente:
                 flash("No se ha encontrado el cliente...")
@@ -118,6 +122,90 @@ def asignar():
             print(e)
             return redirect(url_for('home'))
     return render_template('viajes.html')
+
+
+# ruta viajes-BACK 
+@app.route('/viajes', methods=['GET', 'POST'])
+def viajes():
+    choferes = []
+    cliente_id = None
+    cliente = None
+
+    if request.method == 'POST':
+        try:
+            cliente = session.get('cliente')
+            cliente_id = cliente[0][0]
+            telefono_cliente = cliente[0][1]
+         
+            choferes = request.form.getlist('choferes')
+            
+            
+            fecha = request.form['fecha']
+            origen = request.form['origen']
+            destino = request.form['destino']
+            estado = True    
+
+            cur = db.connection.cursor()
+            
+            cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, origen, destino, estado) VALUES (%(cliente_id)s, %(telefono)s,%(chofer)s, %(fecha)s, %(origen)s, %(destino)s, %(estado)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente,"chofer": choferes, "fecha": fecha, "origen": origen, "destino": destino, "estado": estado})
+            rowcount = cur.rowcount # chequeo si hubo una modificación (devulve números de filas afectadas)
+            cur.execute("UPDATE `choferes` SET `estado`=1 WHERE `id` IN %s", (tuple(choferes),))  # Usa IN para actualizar múltiples choferes
+            cur.connection.commit()
+            # Obtener el ID del viaje insertado
+            cur.execute("SELECT LAST_INSERT_ID()")  # Esto puede variar según la base de datos que estés utilizando
+            viaje_id = cur.fetchone()[0]
+
+            # Almacenar la información del viaje en la sesión usando un identificador único
+            viaje_info = {'viaje_id': viaje_id, 'choferes': choferes}
+            session[f'viaje_info_{viaje_id}'] = viaje_info
+
+            cur.close()
+            if rowcount > 0:
+                flash("Viaje creado correctamente", "success")
+                return redirect(url_for('home'))
+            else:
+                flash("Error en la creación del viaje")    
+        except Exception as e:
+            logger.error("Error en la conexión:%s", str(e))
+            print(e)
+            
+            return redirect(url_for('home'))
+
+    return render_template('viajes.html', cliente=cliente, choferes=choferes)
+
+
+
+#ruta finalizar_viaje
+@app.route('/finalizar_viaje', methods=['POST'])
+def finalizar_viaje():
+    viaje_id = request.form.get('viaje_id')  # Obtén el viaje_id del formulario
+    chofer_id = request.form.get('chofer_id')  # Obtén el chofer_id del formulario
+
+    viaje_info = session.get(f'viaje_info_{viaje_id}', [])
+    
+    if not viaje_info:
+        return redirect(url_for('home'))
+    
+    choferes = viaje_info['choferes']
+
+    estado = False
+
+    cur = db.connection.cursor()
+    cur.execute("UPDATE `viajes` SET `estado` = %s WHERE `id` = %s", (estado, viaje_id))
+    
+    # Asegúrate de que choferes sea un iterable, por ejemplo, una lista
+    cur.execute("UPDATE `choferes` SET `estado`=0 WHERE `id`=%s", ([chofer_id],))
+    
+    cur.connection.commit()
+    cur.close()
+
+    # Eliminar la información del viaje de la sesión después de usarla
+    session.pop(f'viaje_info_{viaje_id}', None)
+        
+    return redirect(url_for('home'))
+
+
+    
 
 
 #ruta nuevo cliente
@@ -166,52 +254,7 @@ def choferes():
 
     return render_template('choferes.html', listado_choferes=listado_choferes)
 
-# ruta viajes-BACK 
-@app.route('/viajes', methods=['GET', 'POST'])
-def viajes():
-    choferes = []
-    cliente_id = None
-    cliente = None
-    if request.method == 'POST':
-        cliente = session.get('cliente')
-        cliente_id = cliente[0][0]
-        telefono_cliente = cliente[0][1]
-        try: 
-            choferes = request.form.getlist('choferes')
-            chofer = choferes[0] 
-            fecha = request.form['fecha']
-            origen = request.form['origen']
-            destino = request.form['destino']
-            estado = True        
-            cur = db.connection.cursor()
-            cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, origen, destino, estado) VALUES (%(cliente_id)s, %(telefono)s,%(chofer)s, %(fecha)s, %(origen)s, %(destino)s, %(estado)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente,"chofer": chofer, "fecha": fecha, "origen": origen, "destino": destino, "estado": estado})
-            rowcount = cur.rowcount # chequeo si hubo una modificación (devulve números de filas afectadas)
-            cur.connection.commit()
-            cur.close()
-            if rowcount > 0:
-                flash("Viaje creado correctamente", "success")
-                return redirect(url_for('home'))
-            else:
-                flash("Error en la creación del viaje")    
-        except Exception as e:
-            logger.error("Error en la conexión", str(e))
-            print(e)
-            return redirect(url_for('home'))
 
-    return render_template('viajes.html', cliente=cliente, choferes=choferes)
-
-
-#ruta finalizar_viaje
-@app.route('/finalizar_viaje', methods=['POST'])
-def finalizar_viaje():
-    viaje_id = request.args.get('viaje_id') # request.arg.get trae la variable enviada a traves de la ruta del formulario
-    print(viaje_id)
-    estado = False
-    cur = db.connection.cursor()
-    cur.execute("UPDATE `viajes` SET `estado` = %s WHERE `id` = %s", (estado, viaje_id))
-    cur.connection.commit()
-    cur.close()
-    return redirect(url_for('home'))
 
 
 

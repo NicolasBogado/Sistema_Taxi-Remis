@@ -2,7 +2,7 @@
 {% import 'menu.html' as menu %}
 
 
-{% block title %}Home{% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -192,10 +192,12 @@
             <td>{{ viaje[5] }}</td>
             <td>{{ viaje[6] }}</td>
             <td>
-              <form action="{{ url_for('finalizar_viaje', viaje_id=viaje[0]) }}" method="post">
+              <form action="{{ url_for('finalizar_viaje')}}" method="post">
+                <input type="hidden" name="viaje_id" value="{{ viaje[0] }}">
+                <input type="hidden" name="chofer_id" value="{{ viaje[3] }}">
                 <button type="submit" class="btn btn-primary">Finalizar Viaje</button>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              </form>
+              </form>            
             </td>           
           </tr>
            {% endif %}
