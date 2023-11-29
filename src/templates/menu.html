@@ -1,8 +1,7 @@
-{% extends './base.html' %}
 
 {% macro render_template(menu) %} 
-  <div class="container-fluid">
-  <div class="row">
+<div class="container-fluid"> <!--Problemas al cerrar el div-->
+  <div class="row"> <!--Problemas al cerrar el div-->
     <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
       <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header">
@@ -13,7 +12,6 @@
           <ul class="nav flex-column">
             <li class="nav-item">
                 <h3>Menu</h3>
-              </a>
             <br>
             </li>
             <li class="nav-item">
@@ -51,25 +49,15 @@
                   <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                 </svg>
                 Clientes
-              </a>        
-          </ul>
-          <div class="conteoViajesyVehiculos">
-            <div class="circulo">
-              <h5>Viajes</h5>
-              <p id="totalViajes">10</p>
-            </div>
-            <div class="circulo">
-              <h5>Vehículos</h5>
-              <p id="totalVehiculos">5</p>
-            </div>
-          </div>  
-          <br>
+              </a>
+          </ul>                    
+              <br>
             <li class="nav-item">                   
               <a class="btn btn-secondary" href="{{ url_for('logout') }}">Logout</a> 
             </li>
-          </ul>
-        </div>
       </div>
     </div>
+  </div>
+
   {% endmacro %}
 

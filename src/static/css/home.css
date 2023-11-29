@@ -4,6 +4,9 @@
     height: 1rem;
   }
   
+.border-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.459) !important;
+}
   /*   Sidebar   */
   
   @media (min-width: 768px) {
@@ -30,6 +33,9 @@
     font-size: .75rem;
   }
   
+  .sidebar {
+    min-height: 600px;
+  }
   /* Navbar  */
   
   .navbar-brand {
@@ -57,6 +63,9 @@
   padding: .75rem 1rem;
 }
 
+.row {
+  background-color: #f8f9fa;
+}
 .remis_america {
     /* Propiedades de estilo que desees aplicar a la imagen */
     width: 100px; /* Ejemplo: establece el ancho de la imagen */
@@ -81,6 +90,9 @@
     border: none; /* Elimina cualquier borde que pueda estar presente */
   }
   
+  .border{
+    border: 1px solid rgba(0, 0, 0, 0.459) !important;
+  }
   
   /* Asignacion de viajes */
 .AsignacionDeViajes {
@@ -94,26 +106,6 @@
       text-align: center;
       flex-direction: row; 
       
-}
-
-/*circulo de menu con estadística*/
-.circulo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #3498db;
-  border-radius: 50%;
-  color: #fff;
-  padding: 19px; /* Reducir el espacio interno */
-  width: 115px; /*  ancho del círculo según tus necesidades */
-  height: 115px; /*  alto del círculo según tus necesidades */
-  margin: 30px;
-  margin-right: 50px;
-}
-
-#totalViajes, #totalVehiculos {
-  font-size: 30px; /* Ajusta el tamaño de fuente de los títulos */
-  margin: 5px 0; /* Reducir el espacio entre los elementos */
 }
 
 /*Viajes*/
@@ -170,20 +162,10 @@
 .table-responsive {
   font-size: large;
 }
-.small {
-}
-.table {
-}
-.table-striped {
-}
-.table-sm {
-}
 
 /*boton finalizar viaje*/
 .btn {
   margin: 5px;
-}
-.btn-primary {
 }
 
 
