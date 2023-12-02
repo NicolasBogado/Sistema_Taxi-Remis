@@ -276,6 +276,6 @@ if __name__ == '__main__':
     app.secret_key = 'B!1w8NAt1T^%kvhUI*S^'
     app.run()
 
-    ########### Desarrollado por NickDev #################
+    ########### Desarrollado por NicoDev #################
     # Linkedin: www.linkedin.com/in/nicolaspbogado
     # GitHub: www.github.com/NicolasBogado
