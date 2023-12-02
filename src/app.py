@@ -275,3 +275,7 @@ if __name__ == '__main__':
     app.register_error_handler(404, status_404)
     app.secret_key = 'B!1w8NAt1T^%kvhUI*S^'
     app.run()
+
+    ########### Desarrollado por NickDev #################
+    # Linkedin: www.linkedin.com/in/nicolaspbogado
+    # GitHub: www.github.com/NicolasBogado
