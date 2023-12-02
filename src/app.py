@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
 import logging
-#from flask_caching import Cache
+
 
 from config import config
 
@@ -32,11 +32,6 @@ def load_user(id):
     return ModelUser.get_by_id(db, id)
     
 
-# ruta home
-@app.route('/')
-def index():
-    return redirect(url_for('login'))
-
 
 # ruta login
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,7 +59,13 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-    
+
+# ruta home
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
+
 #ruta home
 @app.route('/home')
 def home():
@@ -204,9 +205,7 @@ def finalizar_viaje():
         
     return redirect(url_for('home'))
 
-
     
-
 
 #ruta nuevo cliente
 @app.route('/nuevo_cliente', methods=['POST'])
@@ -253,9 +252,6 @@ def choferes():
         flash("Error en la conexión: " + str(e))
 
     return render_template('choferes.html', listado_choferes=listado_choferes)
-
-
-
 
 
 
