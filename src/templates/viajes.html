@@ -122,12 +122,12 @@
             </div>
         
             <div class="campo">
-                <label for="origen">Origen del Viaje:</label>
-                <input type="text" name="origen" id="origen" value="">
+                <label for="origen">Direccion:</label>
+                <input type="text" name="origen" id="origen" value="{{ cliente[0][2] }}">
             </div>
         
             <div class="campo">
-                <label for="destino">Destino del Viaje:</label>
+                <label for="destino">Destino:</label>
                 <input type="text" name="destino" id="destino" value="">
             </div>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

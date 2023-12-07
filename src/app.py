@@ -103,7 +103,7 @@ def asignar():
         try:    
             cliente = request.form['telefono']
             cur = db.connection.cursor()      
-            cur.execute("SELECT `nombre_apellido`,`telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
+            cur.execute("SELECT `nombre_apellido`,`domicilio`, `telefono` FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
             cliente = cur.fetchall()
             session['cliente'] = cliente 
 
@@ -137,9 +137,8 @@ def viajes():
             cliente = session.get('cliente')
             cliente_id = cliente[0][0]
             telefono_cliente = cliente[0][1]
-         
+                     
             choferes = request.form.getlist('choferes')
-            
             
             fecha = request.form['fecha']
             origen = request.form['origen']
