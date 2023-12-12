@@ -2,7 +2,7 @@
 {% import 'menu.html' as menu %}
 
 
-{% block title %}Clientes{% endblock %}
+{% block title %}Historial clientes{% endblock %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -23,24 +23,31 @@
       <div class="btn-toolbar mb-2 mb-md-0"></div>
     </div>
     <br>
-    <h2>Clientes</h2>
+    <h2>Historial de Viajes</h2>
+    <br>
     <div class="table-responsive small">
         <table class="table table-striped table-sm">
           <thead>
             <tr>
-              <th scope="col">Id</th>
+              <th scope="col">Id de viaje</th>
               <th scope="col">Nombre y Apellido</th>
-              <th scope="col">Domicilio</th>
               <th scope="col">Teléfono</th>
+              <th scope="col">Chofer</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Direccion</th>
+              <th scope="col">Destino</th>
             </tr>
           </thead>
           <tbody>
-            {% for cliente in listado_clientes %}
+            {% for cliente in historial_cliente %}
               <tr>
-                <td><a href="{{ url_for('historial_cliente', cliente_id=cliente[0]) }}">{{ cliente[0] }}</a></td>
+                <td>{{ cliente[0] }}</td>
                 <td>{{ cliente[1] }}</td>
                 <td>{{ cliente[2] }}</td>
                 <td>{{ cliente[3] }}</td>
+                <td>{{ cliente[4] }}</td>
+                <td>{{ cliente[5] }}</td>
+                <td>{{ cliente[6] }}</td>
               </tr>
             {% endfor %}
           </tbody>

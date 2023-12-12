@@ -41,12 +41,13 @@
       <div class="btn-toolbar mb-2 mb-md-0"></div>
     </div>
     <div class="formulario-viajes">
-        <form action="/viajes" method="POST">
+        <form action="/viajes" method="POST" id="viajesForm">
             <div class="campo">
                 <label for="cliente">Cliente:</label>
                 <br>
                 {% if cliente %}
-                <p>{{ cliente[0][0] }} - {{ cliente[0][1] }}</p>
+                <p>{{ cliente[0][1] }} - {{ cliente[0][2] }}</p>
+                <input type="hidden" name="cliente_info" value="{{ cliente[0][0] }},{{ cliente[0][1] }},{{ cliente[0][2] }}">
                 {% else %}
                 <p>Cliente no definido</p>
                 {% endif %}
@@ -67,14 +68,23 @@
             </div>
         
             <div class="campo">
-                <label for="origen">Direccion:</label>
-                <input type="text" name="origen" id="origen" value="{{ cliente[0][2] }}">
+                <label for="direccion">Direccion:</label>
+                {% if cliente and cliente[0] and cliente[0][2] %}
+                  <input type="text" name="direccion" id="direccion" value="{{ cliente[0][2] }}">
+                {% else %}
+                  <input type="text" name="direccion" id="direccion" value="">
+                {% endif %}
             </div>
         
             <div class="campo">
                 <label for="destino">Destino:</label>
                 <input type="text" name="destino" id="destino" value="">
             </div>
+            <input type="hidden" name="cliente_nombre" value="{{ informacion_viaje.cliente if informacion_viaje else '' }}">
+            <input type="hidden" name="telefono_cliente" value="{{ informacion_viaje.telefono_cliente if informacion_viaje else '' }}">
+            <input type="hidden" name="fecha" value="{{ informacion_viaje.fecha if informacion_viaje else '' }}">
+            <input type="hidden" name="direccion" value="{{ informacion_viaje.direccion if informacion_viaje else '' }}">
+            <input type="hidden" name="destino" value="{{ informacion_viaje.destino if informacion_viaje else '' }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="boton-asignar">Asignar Viaje</button>
         </form>
@@ -102,7 +112,46 @@
           fechaInput.value = fechaActualFormato;
       });
   </script>
-  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var viajesForm = document.getElementById('viajesForm');
+    viajesForm.addEventListener('submit', function (event) {
+        var choferSeleccionado = document.getElementById('choferes').value;
+
+        // Verificar si no se seleccionó un chofer
+        if (!choferSeleccionado) {
+            var formData = new FormData(viajesForm);
+
+            // Crear una solicitud AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/viajes_espera', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // Manejar la respuesta de la solicitud
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                  var response = JSON.parse(xhr.responseText);
+
+                  if (response.result === 'success') {
+                      // Realizar acciones adicionales según sea necesario
+                      console.log(response.informacion_viaje);
+                  } else {
+                      // Manejar el caso de error
+                      console.error(response.message);
+                  }
+               }
+            };
+
+            // Enviar la solicitud con los datos del formulario
+            xhr.send(new URLSearchParams(formData));
+
+            // Prevenir el envío del formulario por defecto
+            event.preventDefault();
+        }
+    });
+});
+
+  </script>
   
   </main>
 {% endblock %}

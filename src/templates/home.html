@@ -71,7 +71,7 @@
             <th scope="col">Teléfono</th>
             <th scope="col">Chofer</th>
             <th scope="col">Fecha</th>
-            <th scope="col">Origen</th>
+            <th scope="col">Direccion</th>
             <th scope="col">Destino</th>
           </tr>
         </thead>
@@ -97,6 +97,44 @@
           </tr>
            {% endif %}
           {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <br>
+    <h2>Viajes en espera</h2>
+    <br>
+    <div class="table-responsive small">
+      <table class="table table-striped table-sm" name="viajes_espera">
+        <thead>
+          <tr>
+            <th scope="col">Cliente</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Direccion</th>
+            <th scope="col">Destino</th>
+            <th scope="col">Acción</th> <!-- Agregado para mostrar el botón de asignar viaje -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% if informacion_viaje is defined %}
+              <td>{{ informacion_viaje['cliente'] }}</td>
+              <td>{{ informacion_viaje['telefono_cliente'] }}</td>
+              <td>{{ informacion_viaje['fecha'] }}</td>
+              <td>{{ informacion_viaje['direccion'] }}</td>
+              <td>{{ informacion_viaje['destino'] }}</td>
+              <td>
+                <form action="{{ url_for('viajes_espera')}}" method="post">
+                  <input type="hidden" name="viaje_espera" value="{{ informacion_viaje['telefono_cliente'] }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-primary">Asignar Viaje</button>
+                </form>            
+              </td>
+            {% else %}
+              <td colspan="6">Información del viaje no disponible.</td>
+            {% endif %}             
+          </tr>
         </tbody>
       </table>
     </div>
