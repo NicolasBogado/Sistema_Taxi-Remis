@@ -169,5 +169,63 @@
 }
 
 
+/* Viajes en espera*/
+.formulario-viajes-espera {
+  color: #000;
+  width: auto; /* Ancho de la tarjeta */
+  height: 520px;
+  background-color:#ccc; /* Color de fondo */
+  border: 3px solid #000; /* Borde */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+  margin: 20px; /* Margen exterior */
+  padding: 30px; /* Espaciado interior */
+  text-align:left; /* Alineación de texto */
+  font-size:large;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: italic;
+}
 
+.formulario-viajes-espera input{
+color: #000;
+width: auto; /* Ancho de la tarjeta */
+background-color: #fff; /* Color de fondo */
+border: 2px solid #ccc; /* Borde */
+border-radius: 8px; /* Bordes redondeados */
+margin: 20px; /* Margen exterior */
+padding: 9px; /* Espaciado interior */
+text-align: auto;
+}
+
+.formulario-viajes-espera select{
+color: #000;
+width: auto; /* Ancho de la tarjeta */
+background-color: #fff; /* Color de fondo */
+border: 2px solid #ccc; /* Borde */
+border-radius: 8px; /* Bordes redondeados */
+margin: 0; /* Margen exterior */
+padding: 9px; /* Espaciado interior */
+text-align: auto;
+}
+
+.formulario-viajes-espera .boton-asignar {
+display: block;
+color: #000;
+background-color: white;
+margin: 8px auto; /* Margen superior e inferior auto para centrarlo verticalmente */
+padding: 5px 15px; /* Ajusta el espaciado a tu preferencia */
+text-align: center; /* Alineación del texto al centro */
+width: fit-content; /* Ancho ajustado al contenido del botón */
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Historial Viajes */
+.table-responsive {
+font-size: large;
+}
+
+/*boton finalizar viaje*/
+.btn {
+margin: 5px;
+}
 

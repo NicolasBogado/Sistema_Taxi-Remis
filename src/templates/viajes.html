@@ -45,9 +45,9 @@
             <div class="campo">
                 <label for="cliente">Cliente:</label>
                 <br>
-                {% if cliente %}
+                {% if cliente or cliente_info %}
                 <p>{{ cliente[0][1] }} - {{ cliente[0][2] }}</p>
-                <input type="hidden" name="cliente_info" value="{{ cliente[0][0] }},{{ cliente[0][1] }},{{ cliente[0][2] }}">
+                <input type="hidden" name="cliente_info" value="{{ cliente[0][0] }},{{ cliente[0][1] }},{{ cliente[0][2] }}, {{ cliente[0][3] }}">
                 {% else %}
                 <p>Cliente no definido</p>
                 {% endif %}
@@ -59,6 +59,7 @@
                     {% for chofer in choferes %}
                         <option value="{{ chofer[0] }}">{{ chofer[0] }} - {{ chofer[1] }}</option>
                     {% endfor %}
+                        <option value="-1">sin chofer</option>
                 </select>
             </div>
         
@@ -86,7 +87,7 @@
             <input type="hidden" name="direccion" value="{{ informacion_viaje.direccion if informacion_viaje else '' }}">
             <input type="hidden" name="destino" value="{{ informacion_viaje.destino if informacion_viaje else '' }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="boton-asignar">Asignar Viaje</button>
+            <button type="submit" class="boton-asignar"> Asignar Viaje </button>
         </form>
     </div>
     <!-- Js para traer en automático la fecha y hora actual -->
@@ -124,17 +125,19 @@
 
             // Crear una solicitud AJAX
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/viajes_espera', true);
+            xhr.open('POST','/viajes_espera', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
             // Manejar la respuesta de la solicitud
             xhr.onload = function () {
               if (xhr.status === 200) {
+                  console.log(xhr.responseText);
                   var response = JSON.parse(xhr.responseText);
 
                   if (response.result === 'success') {
                       // Realizar acciones adicionales según sea necesario
                       console.log(response.informacion_viaje);
+                      window.location.href = '/home';
                   } else {
                       // Manejar el caso de error
                       console.error(response.message);
@@ -149,9 +152,9 @@
             event.preventDefault();
         }
     });
-});
-
+  });
   </script>
+  
   
   </main>
 {% endblock %}

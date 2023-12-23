@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
 import logging
+import json
 
 
 from config import config
@@ -31,7 +32,6 @@ logger = logging.getLogger(__name__)
 def load_user(id):
     return ModelUser.get_by_id(db, id)
     
-
 
 # ruta login
 @app.route('/login', methods=['GET', 'POST'])
@@ -67,7 +67,7 @@ def index():
 
 
 #ruta home
-@app.route('/home')
+@app.route('/home', methods=['GET','POST'])
 def home():
     cur = db.connection.cursor()
     cur.execute("SELECT * FROM `viajes`")
@@ -75,10 +75,13 @@ def home():
     session['viajes'] = viajes
     cur.close()
 
-    informacion_viaje = session.get('informacion_viaje', None)
+    informacion_viaje = session.get('informacion_viaje', {})
     cliente_info = session.get('cliente', None)
 
-    return render_template('home.html', viajes=viajes, informacion_viaje=informacion_viaje, cliente_info=cliente_info)
+    # Asegúrate de que 'viajes_en_espera' sea una lista
+    viajes_en_espera = session.get('viajes_en_espera', [])
+
+    return render_template('home.html', viajes=viajes, informacion_viaje=informacion_viaje, viajes_en_espera=viajes_en_espera, cliente_info=cliente_info)
 
 
 
@@ -102,24 +105,24 @@ def ingresar_cliente():
 
 
 # método para buscar clientes en la base de datos
-@app.route('/asignar', methods=['POST'])
+@app.route('/asignar', methods=['GET','POST'])
 def asignar():
     if request.method =='POST':
-        try:    
+        try:
             cliente = request.form['telefono']
             cur = db.connection.cursor()      
             cur.execute("SELECT * FROM `clientes` WHERE `telefono`= %(cliente)s", {"cliente":cliente})
             cliente = cur.fetchall()
-            session['cliente'] = cliente 
-
-            cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")# filtro los choferes con el estado = 0, es decir sin viajes
+            session['cliente'] = cliente
+ 
+            # filtro los choferes con el estado = 0, es decir sin viajes
+            cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")
             choferes = cur.fetchall()
             cur.close()
 
             if not cliente:
                 flash("No se ha encontrado el cliente...")
-                return render_template('home.html')
-            
+                return render_template('home.html')         
             else:
                 return render_template('viajes.html', cliente=cliente, choferes=choferes)
         except Exception as e:
@@ -138,6 +141,10 @@ def viajes():
     fecha = None
     direccion = None
     destino = None
+    cliente_info = None
+    nombre_cliente = None
+
+    cur = db.connection.cursor()
 
     if request.method == 'POST':
         try:
@@ -146,53 +153,92 @@ def viajes():
             
             if cliente_info:
                 cliente_id = cliente_info[0][0]
-                telefono_cliente = cliente_info[0][1]
+
+                nombre_cliente = cliente_info[0][1]    
+
+                telefono_cliente = cliente_info[0][3]
+
                 session['cliente_id'] = cliente_id
                 session['telefono_cliente'] = telefono_cliente
                 
-                # Resto del código sigue igual
+                #choferes = choferes
+
                 choferes = request.form.getlist('choferes')
+
                 fecha = request.form['fecha']
                 session['fecha'] = fecha
+
                 direccion = request.form['direccion']
                 session['direccion'] = direccion
+
                 destino = request.form['destino']
                 session['destino'] = destino
-                estado = True    
 
-                cur = db.connection.cursor()
+                estado = True
                 
-                cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado})
-                rowcount = cur.rowcount
-                cur.execute("UPDATE `choferes` SET `estado`=1 WHERE `id` IN %(chofer)s", {"chofer": tuple(choferes)})
-                cur.connection.commit()
-                cur.execute("SELECT LAST_INSERT_ID()")
-                viaje_id = cur.fetchone()[0]
-
-                viaje_info = {'viaje_id': viaje_id, 'choferes': choferes}
-                print(viaje_info)
-                session[f'viaje_info_{viaje_id}'] = viaje_info
-
-                cur.close()
+                espera = False
                 
-                if rowcount > 0:
-                    flash("Viaje creado correctamente", "success")
-                    return redirect(url_for('home'))
+                cliente_info = (cliente_id, nombre_cliente, telefono_cliente, fecha, direccion, destino)
+
+                if "-1" in choferes:
+                    espera = True
+                    cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
+                    cur.connection.commit()
+                    cur.close()
+                    flash("Viaje a la espera de un chofer")
+
+                    return redirect(url_for('viajes_espera', cliente_info=json.dumps(cliente_info)))
+                    #return redirect(url_for('viajes_espera', cliente_info=cliente_info))
                 else:
-                    flash("Error en la creación del viaje")    
+                    cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
+                    rowcount = cur.rowcount
+                    cur.execute("UPDATE `choferes` SET `estado`=1 WHERE `id` IN %(chofer)s", {"chofer": tuple(choferes)})
+                    cur.connection.commit()
+                    cur.execute("SELECT LAST_INSERT_ID()")
+                    viaje_id = cur.fetchone()[0]
+
+                    viaje_info = {'viaje_id': viaje_id, 'choferes': choferes}
+                    session[f'viaje_info_{viaje_id}'] = viaje_info
+
+                    cur.close()
+                    
+                    if rowcount > 0:
+                        flash("Viaje creado correctamente", "success")
+                        return redirect(url_for('home'))
+                    else:
+                        flash("Error en la creación del viaje")    
             else:
                 flash("Error: No se ha encontrado el cliente.")
                 return redirect(url_for('home'))
-
+  
         except Exception as e:
             logger.error("Error en la conexión:%s", str(e))
-            print(e)
-            return redirect(url_for('home'))
+            print("Error in connection:", e)
+            return jsonify({"result": "error", "message": "Error en la conexión."})
+
+    if request.method == 'GET':
+        cliente_info = request.args.get('cliente_info')
+        telefono_cliente = request.args.get('telefono_cliente')
+        fecha = request.args.get('fecha')
+        direccion = request.args.get('direccion')
+        destino = request.args.get('destino')
+
+        cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")
+        choferes = cur.fetchall()
+        cur.close()
+
+        # Eliminar la información de viajes_en_espera de la sesión
+        if 'viajes_en_espera' in session:
+            del session['viajes_en_espera']
+            print('viaje eleminado')
+
+        return render_template('viajes_espera.html', cliente_info=cliente_info, choferes=choferes, telefono_cliente=telefono_cliente, fecha=fecha, direccion=direccion, destino=destino)
 
     return render_template('viajes.html', cliente_info=cliente_info, choferes=choferes, telefono_cliente=telefono_cliente, fecha=fecha, direccion=direccion, destino=destino)
 
 
 
+# ruta viaje en espera back
 @app.route('/viajes_espera', methods=['GET', 'POST'])
 def viajes_espera():
     if request.method == 'POST':
@@ -203,12 +249,17 @@ def viajes_espera():
             cliente_info_parts = cliente_info.split(',')
 
             # Extraer los valores correspondientes
-            cliente_id, cliente_nombre, telefono_cliente = cliente_info_parts
+            cliente_id, cliente_nombre, direccion, telefono_cliente = cliente_info_parts
 
             # Resto del procesamiento del formulario
-            fecha = request.form.get('fecha')
-            direccion = request.form.get('direccion')
-            destino = request.form.get('destino')
+            fecha = request.args.get('fecha')
+            direccion = request.args.get('direccion')
+            destino = request.args.get('destino')
+            
+            
+            viajes_en_espera = session.get('viajes_en_espera', [])
+            #if not isinstance(viajes_en_espera, list):
+            #    viajes_en_espera = []
 
             informacion_viaje = {
                 'cliente_id': cliente_id,
@@ -217,22 +268,49 @@ def viajes_espera():
                 'fecha': fecha,
                 'direccion': direccion,
                 'destino': destino
-            }
+            }    
 
-            session['informacion_viaje'] = informacion_viaje  # Guarda la información en la sesión
-            print(informacion_viaje)
+            
+            viajes_en_espera.append(informacion_viaje)
+            viajes_en_espera = [v for v in viajes_en_espera if v != informacion_viaje]
+            session['viajes_en_espera'] = viajes_en_espera
+            
 
-            return jsonify(result='success', informacion_viaje=informacion_viaje)
+            return jsonify(result='success', viajes_en_espera=viajes_en_espera)
 
         else:
             flash('Error: No se proporcionó información del cliente')
             return jsonify(result='error', message='No se proporcionó información del cliente')
 
-    else:
-        flash('Error: Método de solicitud no válido')
-        return jsonify(result='error', message='Método de solicitud no válido')
+    elif request.method == 'GET':
+        cliente_info = json.loads(request.args.get('cliente_info'))
 
-    
+        if cliente_info:
+            # Descomponer la cadena cliente_info en partes
+            cliente_id, nombre_cliente, telefono_cliente, fecha, direccion, destino = cliente_info          
+            
+            viajes_en_espera = session.get('viajes_en_espera', [])
+            if not isinstance(viajes_en_espera, list):
+                viajes_en_espera = []
+
+            informacion_viaje = {
+                'cliente_id': cliente_id,
+                'cliente': nombre_cliente,
+                'telefono_cliente': telefono_cliente,
+                'fecha': fecha,
+                'direccion': direccion,
+                'destino': destino
+            }    
+
+            
+            viajes_en_espera.append(informacion_viaje)
+            session['viajes_en_espera'] = viajes_en_espera
+
+            return render_template('home.html', viajes_en_espera=viajes_en_espera)
+
+        else:
+            flash('Error viaje en espera no creado')
+            return render_template('home.html')   
     
 
 
@@ -242,11 +320,7 @@ def finalizar_viaje():
     viaje_id = request.form.get('viaje_id')  # Obtén el viaje_id del formulario
     chofer_id = request.form.get('chofer_id')  # Obtén el chofer_id del formulario
 
-    print(f"Viaje ID: {viaje_id}")
-    print(f"Chofer ID: {chofer_id}")
-
     viaje_info = session.get(f'viaje_info_{viaje_id}', [])
-    print(viaje_info)
 
     if not viaje_info:
         return redirect(url_for('home'))

@@ -73,6 +73,7 @@
             <th scope="col">Fecha</th>
             <th scope="col">Direccion</th>
             <th scope="col">Destino</th>
+            <th scope="col">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -100,11 +101,11 @@
         </tbody>
       </table>
     </div>
-    
     <br>
     <h2>Viajes en espera</h2>
     <br>
     <div class="table-responsive small">
+      {% if viajes_en_espera %}
       <table class="table table-striped table-sm" name="viajes_espera">
         <thead>
           <tr>
@@ -117,27 +118,35 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            {% if informacion_viaje is defined %}
-              <td>{{ informacion_viaje['cliente'] }}</td>
-              <td>{{ informacion_viaje['telefono_cliente'] }}</td>
-              <td>{{ informacion_viaje['fecha'] }}</td>
-              <td>{{ informacion_viaje['direccion'] }}</td>
-              <td>{{ informacion_viaje['destino'] }}</td>
-              <td>
-                <form action="{{ url_for('viajes_espera')}}" method="post">
-                  <input type="hidden" name="viaje_espera" value="{{ informacion_viaje['telefono_cliente'] }}">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <button type="submit" class="btn btn-primary">Asignar Viaje</button>
-                </form>            
-              </td>
-            {% else %}
-              <td colspan="6">Información del viaje no disponible.</td>
-            {% endif %}             
-          </tr>
+            {% for viaje in viajes_en_espera %}
+              <tr>
+                <td>{{ viaje['cliente'] }}</td>
+                <td>{{ viaje['telefono_cliente'] }}</td>
+                <td>{{ viaje['fecha'] }}</td>
+                <td>{{ viaje['direccion'] }}</td>
+                <td>{{ viaje['destino'] }}</td>
+                <td>
+                  <form action="/viajes" method="get" name="viajesEsperaForm" id="viajesEsperaForm_{{ loop.index }}">
+                    <input type="hidden" name="cliente_info" value="{{ viaje['cliente'] }}">
+                    <input type="hidden" name="telefono_cliente" value="{{ viaje['telefono_cliente'] }}">
+                    <input type="hidden" name="fecha" value="{{ viaje['fecha'] }}">
+                    <input type="hidden" name="direccion" value="{{ viaje['direccion'] }}">
+                    <input type="hidden" name="destino" value="{{ viaje['destino'] }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-primary">Asignar Viaje</button>
+                  </form>            
+                </td>
+              </tr>
+            {% endfor %}    
         </tbody>
       </table>
+      {% else %}
+      <tr>
+        <td colspan="6">No hay viajes en espera.</td>
+      </tr>
+      {% endif %}
     </div>
+
   </main>
 
 {% endblock %}
