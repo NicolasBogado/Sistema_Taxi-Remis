@@ -160,8 +160,6 @@ def viajes():
 
                 session['cliente_id'] = cliente_id
                 session['telefono_cliente'] = telefono_cliente
-                
-                #choferes = choferes
 
                 choferes = request.form.getlist('choferes')
 
@@ -188,7 +186,6 @@ def viajes():
                     flash("Viaje a la espera de un chofer")
 
                     return redirect(url_for('viajes_espera', cliente_info=json.dumps(cliente_info)))
-                    #return redirect(url_for('viajes_espera', cliente_info=cliente_info))
                 else:
                     cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
                     rowcount = cur.rowcount
@@ -254,12 +251,9 @@ def viajes_espera():
             # Resto del procesamiento del formulario
             fecha = request.args.get('fecha')
             direccion = request.args.get('direccion')
-            destino = request.args.get('destino')
-            
+            destino = request.args.get('destino')          
             
             viajes_en_espera = session.get('viajes_en_espera', [])
-            #if not isinstance(viajes_en_espera, list):
-            #    viajes_en_espera = []
 
             informacion_viaje = {
                 'cliente_id': cliente_id,
