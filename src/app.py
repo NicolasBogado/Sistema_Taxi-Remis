@@ -4,6 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
 import logging
 import json
+import ast
 
 
 from config import config
@@ -143,6 +144,7 @@ def viajes():
     destino = None
     cliente_info = None
     nombre_cliente = None
+    viaje_id_espera = None
 
     cur = db.connection.cursor()
 
@@ -161,7 +163,7 @@ def viajes():
                 session['cliente_id'] = cliente_id
                 session['telefono_cliente'] = telefono_cliente
 
-                choferes = request.form.getlist('choferes')
+                choferes = request.form.getlist('choferes')  
 
                 fecha = request.form['fecha']
                 session['fecha'] = fecha
@@ -182,9 +184,13 @@ def viajes():
                     espera = True
                     cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
                     cur.connection.commit()
+                    cur.execute("SELECT LAST_INSERT_ID()")
+                    viaje_id_espera= cur.fetchone()[0]
+                    print(viaje_id_espera)
+                    
                     cur.close()
-                    flash("Viaje a la espera de un chofer")
 
+                    flash("Viaje a la espera de un chofer")
                     return redirect(url_for('viajes_espera', cliente_info=json.dumps(cliente_info)))
                 else:
                     cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
@@ -222,12 +228,16 @@ def viajes():
 
         cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")
         choferes = cur.fetchall()
-        cur.close()
 
+        cur.execute("UPDATE `viajes` SET `espera`= 0 WHERE `id`= %s", (viaje_id_espera,))
+
+        cur.execute("DELETE FROM `viajes` WHERE `id`=%s AND `espera`= 1 AND `chofer` = -1",(viaje_id_espera,))
+        cur.connection.commit()
+
+        cur.close()
         # Eliminar la información de viajes_en_espera de la sesión
         if 'viajes_en_espera' in session:
             del session['viajes_en_espera']
-            print('viaje eleminado')
 
         return render_template('viajes_espera.html', cliente_info=cliente_info, choferes=choferes, telefono_cliente=telefono_cliente, fecha=fecha, direccion=direccion, destino=destino)
 
