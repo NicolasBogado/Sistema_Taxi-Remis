@@ -4,9 +4,6 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
 import logging
 import json
-import ast
-
-
 from config import config
 
 # Models:
@@ -186,7 +183,6 @@ def viajes():
                     cur.connection.commit()
                     cur.execute("SELECT LAST_INSERT_ID()")
                     viaje_id_espera= cur.fetchone()[0]
-                    print(viaje_id_espera)
                     
                     cur.close()
 
