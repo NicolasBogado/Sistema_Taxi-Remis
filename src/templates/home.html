@@ -78,7 +78,7 @@
         </thead>
         <tbody>
           {% for viaje in viajes %}
-            {% if viaje[7] != 0 and viaje[8] == 0 %} <!--si es estado es true se ejecuta el bloque-->
+            {% if viaje[7] == 1 and viaje[8] == 0 %} <!--si es estado es true se ejecuta el bloque-->
           <tr>
             <td>{{ viaje[0] }}</td>
             <td>{{ viaje[1] }}</td>

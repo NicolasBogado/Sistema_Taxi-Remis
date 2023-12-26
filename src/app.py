@@ -179,11 +179,13 @@ def viajes():
 
                 if "-1" in choferes:
                     espera = True
-                    cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})
+                    estado = False
+                    cur.execute("INSERT INTO `viajes` (cliente, telefono, chofer, fecha, direccion, destino, estado, espera) VALUES (%(cliente_id)s, %(telefono)s, %(chofer)s, %(fecha)s, %(direccion)s, %(destino)s, %(estado)s, %(espera)s)", {"cliente_id": cliente_id, "telefono": telefono_cliente, "chofer": tuple(choferes), "fecha": fecha, "direccion": direccion, "destino": destino, "estado": estado, "espera":espera})                    
                     cur.connection.commit()
                     cur.execute("SELECT LAST_INSERT_ID()")
                     viaje_id_espera= cur.fetchone()[0]
-                    
+                    session['viaje_id_espera'] = viaje_id_espera
+
                     cur.close()
 
                     flash("Viaje a la espera de un chofer")
@@ -222,6 +224,11 @@ def viajes():
         direccion = request.args.get('direccion')
         destino = request.args.get('destino')
 
+        # Obtener viaje_id_espera de la sesión
+        #viaje_id_espera = session.get('viaje_id_espera', None)
+        #print(viaje_id_espera)
+
+        #if viaje_id_espera:    
         cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")
         choferes = cur.fetchall()
 
@@ -234,6 +241,7 @@ def viajes():
         # Eliminar la información de viajes_en_espera de la sesión
         if 'viajes_en_espera' in session:
             del session['viajes_en_espera']
+            del session['viaje_id_espera']
 
         return render_template('viajes_espera.html', cliente_info=cliente_info, choferes=choferes, telefono_cliente=telefono_cliente, fecha=fecha, direccion=direccion, destino=destino)
 
@@ -244,6 +252,7 @@ def viajes():
 # ruta viaje en espera back
 @app.route('/viajes_espera', methods=['GET', 'POST'])
 def viajes_espera():
+    
     if request.method == 'POST':
         cliente_info = request.form.get('cliente_info')
 
@@ -306,7 +315,7 @@ def viajes_espera():
             viajes_en_espera.append(informacion_viaje)
             session['viajes_en_espera'] = viajes_en_espera
 
-            return render_template('home.html', viajes_en_espera=viajes_en_espera)
+            return redirect(url_for('home', viajes_en_espera=viajes_en_espera))
 
         else:
             flash('Error viaje en espera no creado')
