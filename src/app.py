@@ -224,10 +224,6 @@ def viajes():
         direccion = request.args.get('direccion')
         destino = request.args.get('destino')
 
-        # Obtener viaje_id_espera de la sesión
-        #viaje_id_espera = session.get('viaje_id_espera', None)
-        #print(viaje_id_espera)
-
         #if viaje_id_espera:    
         cur.execute("SELECT * FROM `choferes` WHERE `estado` IS NULL OR `estado`=0")
         choferes = cur.fetchall()
